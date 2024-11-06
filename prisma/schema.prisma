@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PurchaseOrder {
+  id              String    @id @default(uuid())
+  recipientEmail  String
+  status          String    @default("new")
+  companyName     String?
+  ein             String?
+  fullName        String?
+  address         String?
+  companyPhone    String?
+  directPhone     String?
+  rejectionComment String?
+  uniqueLink      String    @unique
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  files           File[]
+}
+
+model File {
+  id              String        @id @default(uuid())
+  type            String        // ato, tpt, w9, form5000a
+  filename        String
+  path            String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  purchaseOrderId String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
